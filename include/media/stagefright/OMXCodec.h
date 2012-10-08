@@ -113,10 +113,14 @@ struct OMXCodec : public MediaSource,
         kAvoidMemcopyInputRecordingFrames     = 2048,
         kRequiresLargerEncoderOutputBuffer    = 4096,
         kOutputBuffersAreUnreadable           = 8192,
+<<<<<<< HEAD
 #ifdef QCOM_HARDWARE
         kRequiresGlobalFlush                  = 0x20000000, // 2^29
         kRequiresWMAProComponent              = 0x40000000, //2^30
 #endif
+=======
+        kRequiresSetProfileLevel              = 16384,
+>>>>>>> 31088c5... OMXCodec: add quirk to set profile/level to OMX components
     };
 
     // for use by ACodec

@@ -284,6 +284,7 @@ uint32_t OMXCodec::getComponentQuirks(
                 index, "output-buffers-are-unreadable")) {
         quirks |= kOutputBuffersAreUnreadable;
     }
+<<<<<<< HEAD
     if (list->codecHasQuirk(
                 index, "requies-loaded-to-idle-after-allocation")) {
       quirks |= kRequiresLoadedToIdleAfterAllocation;
@@ -306,6 +307,14 @@ uint32_t OMXCodec::getComponentQuirks(
         quirks |= kRequiresWMAProComponent;
     }
 #endif
+=======
+
+    if (list->codecHasQuirk(
+                index, "requires-set-profile-level")) {
+        quirks |= kRequiresSetProfileLevel;
+    }
+
+>>>>>>> 31088c5... OMXCodec: add quirk to set profile/level to OMX components
     return quirks;
 }
 
@@ -618,6 +627,11 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             CODEC_LOGI(
                     "AVC profile = %u (%s), level = %u",
                     profile, AVCProfileToString(profile), level);
+
+            if (mQuirks & kRequiresSetProfileLevel) {
+                 meta->setInt32(kKeyVideoProfile, profile);
+                 meta->setInt32(kKeyVideoLevel, level);
+            }
         } else if (meta->findData(kKeyVorbisInfo, &type, &data, &size)) {
             addCodecSpecificData(data, size);
 
@@ -804,6 +818,26 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 }
             }
 #endif
+        }
+    }
+
+    if (mQuirks & kRequiresSetProfileLevel) {
+        int32_t level;
+        status_t err;
+        if (meta->findInt32(kKeyVideoLevel, &level)) {
+
+            OMX_VIDEO_PARAM_AVCTYPE avcVideoParams;
+            InitOMXParams(&avcVideoParams);
+            avcVideoParams.nPortIndex = kPortIndexInput;
+
+            err = mOMX->getParameter(
+                    mNode, OMX_IndexParamVideoAvc, &avcVideoParams, sizeof(avcVideoParams));
+            CHECK_EQ(err, (status_t)OK);
+
+            avcVideoParams.eLevel = (OMX_VIDEO_AVCLEVELTYPE)level;
+            err = mOMX->setParameter(
+                    mNode, OMX_IndexParamVideoAvc, &avcVideoParams, sizeof(avcVideoParams));
+            CHECK_EQ(err, (status_t)OK);
         }
     }
 
