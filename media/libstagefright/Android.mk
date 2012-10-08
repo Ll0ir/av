@@ -98,9 +98,13 @@ LOCAL_C_INCLUDES:= \
         $(TOP)/external/flac/include \
         $(TOP)/external/tremolo \
         $(TOP)/external/openssl/include \
+<<<<<<< HEAD
         $(TOP)/hardware/qcom/display/libgralloc \
         $(TOP)/hardware/qcom/media/mm-core/inc \
         $(TOP)/system/core/include
+=======
+        $(TOP)/external/chromium \
+>>>>>>> 5846e9f... Fixed compile errors in frameworks/av reported by clang
 
 LOCAL_SHARED_LIBRARIES := \
         libbinder \
